@@ -4,38 +4,42 @@
  * 2.getter中将watcher添加到dep队列中进行暂存
  * 3.setter中通过调用dep的notify通知所有watcher更新视图
  */
-class Observer{
-  constructor(data) {
-    this.walk(data);
+ class Observer {
+  constructor (data) {
+    this.walk(data)
   }
-  walk(data) {
+  walk (data) {
+    // 1. 判断data是否是对象
     if (!data || typeof data !== 'object') {
-      return;
+      return
     }
+    // 2. 遍历data对象的所有属性
     Object.keys(data).forEach(key => {
-      this.defineReactive(data,key,data[key])
+      this.defineReactive(data, key, data[key])
     })
   }
-  defineReactive(data, key, value) {
-    let self = this;
-    let dep = new Dep();
-    this.walk(value);//当value是对象时，递归遍历为每个属性都添加getter和setter
-
-    Object.defineProperty(data, key, {
+  defineReactive (obj, key, val) {
+    let that = this
+    // 负责收集依赖，并发送通知
+    let dep = new Dep()
+    // 如果val是对象，把val内部的属性转换成响应式数据
+    this.walk(val)
+    Object.defineProperty(obj, key, {
       enumerable: true,
       configurable: true,
-      get() {
-        // return data[key]; 在get直接调用data[key]会出现死循环，因此传入value
-        Dep.target && dep.addSubs(Dep.target);//dep中注入watcher  Dep.target就是wather对象 
-        return value; 
+      get () {
+        // 收集依赖
+        Dep.target && dep.addSub(Dep.target)
+        return val
       },
-      set(newValue) {
-        if (newValue === value) {
+      set (newValue) {
+        if (newValue === val) {
           return
         }
-        value = newValue;
-        self.walk(newValue); //当给data重新赋值类型为对象时，需要递归遍历添加响应式
-        dep.notify(newValue);//修改新值时，通知所有watcher
+        val = newValue
+        that.walk(newValue)
+        // 发送通知
+        dep.notify()
       }
     })
   }
