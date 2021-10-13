@@ -15,10 +15,13 @@
     <h1>v-model</h1>
     <input type="text" v-model="msg">
     <input type="text" v-model="count">
+    <p v-html="htmlValue"></p>
+    <button v-on:click="addCount" >单击</button>
+    <button v-on:dblclick="changeValue" >双击</button>
   </div>
   <script src="./js/dep.js"></script>       
   <script src="./js/watcher.js"></script>
-  <script src="./js/compiler.js"></script>
+  <script src="./js/compiler-expend.js"></script>
   <script src="./js/observer.js"></script>
   <script src="./js/vue.js"></script>
   <script>
@@ -27,10 +30,21 @@
       data: {
         msg: 'Hello Vue',
         count: 100,
-        person: { name: 'zs' }
+        person: { name: 'zs' },
+        htmlValue:'<h1 style="color:red">v-html指令</h1>'
+      },
+      methods:{
+        addCount(){
+          this.count = ++this.count;
+          console.log('this.count=',this.count)
+        },
+        changeValue(){
+          console.log('双击双击')
+        }
       }
     })
-    console.log(vm)
+    // vm.htmlValue='<h1>4444</h1>'
+    // console.log(vm)
   </script>
 </body>
 </html>
